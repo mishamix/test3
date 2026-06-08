@@ -6,10 +6,12 @@ import { useApp } from '../../contexts/AppContext';
 import { Property, Language } from '../../types';
 import Loading, { SkeletonCard } from '../../components/Loading';
 import Modal from '../../components/Modal';
+import { useToast } from '../../contexts/ToastContext';
 
 export default function AdminProperties() {
   const { t, language } = useApp();
   const navigate = useNavigate();
+  const toast = useToast();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteModal, setDeleteModal] = useState<{ open: boolean; propertyId: string | null }>({
@@ -49,8 +51,10 @@ export default function AdminProperties() {
 
       if (error) throw error;
       setProperties(properties.filter((p) => p.id !== deleteModal.propertyId));
+      toast.success('Deleted', 'Property removed successfully.');
     } catch (error) {
       console.error('Error deleting property:', error);
+      toast.error('Delete failed', error instanceof Error ? error.message : 'Failed to delete property');
     } finally {
       setDeleteModal({ open: false, propertyId: null });
     }
@@ -132,7 +136,7 @@ export default function AdminProperties() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {properties.map((property) => {
             const title = property.title[language as Language] || property.title.en;
-            const mainImage = property.images[0];
+            const mainImage = property.thumbnail_url || property.images[0];
 
             return (
               <div key={property.id} className="bg-white dark:bg-secondary-900 rounded-xl shadow-lg overflow-hidden">
@@ -151,12 +155,12 @@ export default function AdminProperties() {
                   <div className="absolute top-3 right-3 flex gap-2">
                     {property.is_featured && (
                       <span className="px-2 py-1 text-xs bg-luxury-gold text-white rounded">
-                        Featured
+                        {t('admin.featured')}
                       </span>
                     )}
                     <span
                       className={`px-2 py-1 text-xs rounded text-white ${
-                        property.status === 'available'
+                        property.status === 'for_sale'
                           ? 'bg-green-500'
                           : property.status === 'sold'
                           ? 'bg-red-500'
@@ -194,7 +198,7 @@ export default function AdminProperties() {
                       }`}
                     >
                       {property.is_featured ? <Check className="w-4 h-4 mr-1" /> : null}
-                      Featured
+                      {t('admin.featured')}
                     </button>
                     <button
                       onClick={() => setDeleteModal({ open: true, propertyId: property.id })}

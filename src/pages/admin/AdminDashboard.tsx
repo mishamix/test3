@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Building2,
   LayoutDashboard,
   Home,
   MessageSquare,
@@ -12,6 +11,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useApp } from '../../contexts/AppContext';
+import BrandLogo from '../../components/BrandLogo';
 
 export default function AdminDashboard() {
   const { t } = useApp();
@@ -61,11 +61,9 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-secondary-100 dark:bg-secondary-950">
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white dark:bg-secondary-900 border-b border-secondary-200 dark:border-secondary-700">
         <div className="flex items-center justify-between h-16 px-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-luxury-gold rounded-lg flex items-center justify-center">
-              <Building2 className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-display text-lg font-bold text-secondary-900 dark:text-white">
+          <div className="flex items-center gap-2 min-w-0">
+            <BrandLogo className="h-10 w-auto max-w-[140px] md:h-[50px]" />
+            <span className="font-display text-lg font-bold text-secondary-900 dark:text-white shrink-0">
               Admin
             </span>
           </div>
@@ -88,13 +86,8 @@ export default function AdminDashboard() {
         }`}
       >
         <div className="h-full flex flex-col">
-          <div className="flex items-center gap-2 p-6 border-b border-secondary-200 dark:border-secondary-700">
-            <div className="w-10 h-10 bg-luxury-gold rounded-lg flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-white" />
-            </div>
-            <span className="font-display text-xl font-bold text-secondary-900 dark:text-white">
-              Luxury Est.
-            </span>
+          <div className="flex items-center gap-3 p-6 border-b border-secondary-200 dark:border-secondary-700 min-w-0">
+            <BrandLogo className="h-10 w-auto max-w-[180px] md:h-[50px] lg:h-[55px]" />
           </div>
 
           <nav className="flex-1 p-4 space-y-1">

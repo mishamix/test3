@@ -40,7 +40,7 @@ export default {
   properties: {
     title: 'Нерухомість',
     subtitle: 'Досліджуйте нашу ексклюзивну колекцію розкішної нерухомості',
-    featured: 'Рекомендовані',
+    featured: 'Топові об\'єкти',
     viewAll: 'Дивитися всі',
     allProperties: 'Всі обєкти',
     filters: 'Фільтри',
@@ -57,9 +57,9 @@ export default {
     priceRange: 'Діапазон цін',
     location: 'Локація',
     status: {
-      available: 'Доступно',
+      for_sale: 'Продається',
       sold: 'Продано',
-      reserved: 'Зарезервовано',
+      rented: 'Орендовано',
     },
     types: {
       house: 'Будинок',
@@ -156,7 +156,7 @@ export default {
     removeImage: 'Видалити зображення',
     imageUrl: 'URL зображення',
     dragImages: 'Перетягніть зображення сюди або натисніть для завантаження',
-    featured: 'Рекомендовано',
+    featured: 'Топ',
     yes: 'Так',
     no: 'Ні',
     inquiries: {

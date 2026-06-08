@@ -40,7 +40,7 @@ export default {
   properties: {
     title: 'العقارات',
     subtitle: 'استكشف مجموعتنا الحصرية من العقارات الفاخرة',
-    featured: 'العقارات المميزة',
+    featured: 'أفضل العقارات',
     viewAll: 'عرض الكل',
     allProperties: 'جميع العقارات',
     filters: 'تصفية',
@@ -57,9 +57,9 @@ export default {
     priceRange: 'نطاق السعر',
     location: 'الموقع',
     status: {
-      available: 'متاح',
+      for_sale: 'للبيع',
       sold: 'مباع',
-      reserved: 'محجوز',
+      rented: 'مؤجّر',
     },
     types: {
       house: 'منزل',
@@ -156,7 +156,7 @@ export default {
     removeImage: 'حذف الصورة',
     imageUrl: 'رابط الصورة',
     dragImages: 'اسحب الصور هنا أو انقر للتحميل',
-    featured: 'مميز',
+    featured: 'Top',
     yes: 'نعم',
     no: 'لا',
     inquiries: {

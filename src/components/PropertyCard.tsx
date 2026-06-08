@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { MapPin, Bed, Bath, Square } from 'lucide-react';
 import { Property, Language } from '../types';
 import { useApp } from '../contexts/AppContext';
+import { FALLBACK_PROPERTY_IMAGE, getLocationLabel } from '../lib/propertyUtils';
 
 interface PropertyCardProps {
   property: Property;
@@ -11,9 +12,9 @@ export default function PropertyCard({ property }: PropertyCardProps) {
   const { language, t } = useApp();
 
   const title = property.title[language as Language] || property.title.en;
-  const location = property.location;
-  const price = property.price.toLocaleString();
-  const mainImage = property.images[0] || 'https://images.pexels.com/photos/210617/pexels-photo-210617.jpeg';
+  const location = getLocationLabel(property);
+  const mainImage = property.thumbnail_url || property.images[0] || FALLBACK_PROPERTY_IMAGE;
+  const areaUnit = property.area_unit === 'sqm' ? 'm²' : t('properties.sqft');
 
   const formatPrice = (price: number, currency: string) => {
     return `$${price.toLocaleString()} ${currency}`;
@@ -35,14 +36,14 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             {t('properties.status.sold')}
           </div>
         )}
-        {property.status === 'reserved' && (
-          <div className="absolute top-4 left-4 px-3 py-1 bg-yellow-600 text-white text-sm font-medium rounded">
-            {t('properties.status.reserved')}
+        {property.status === 'rented' && (
+          <div className="absolute top-4 left-4 px-3 py-1 bg-yellow-700 text-white text-sm font-medium rounded">
+            {t('properties.status.rented')}
           </div>
         )}
-        {property.is_featured && property.status === 'available' && (
+        {property.is_featured && property.status === 'for_sale' && (
           <div className="absolute top-4 left-4 px-3 py-1 bg-luxury-gold text-white text-sm font-medium rounded">
-            {t('properties.featured')}
+            {t('admin.featured')}
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -76,7 +77,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           {property.area_size > 0 && (
             <div className="flex items-center">
               <Square className="w-4 h-4 mr-1" />
-              <span>{property.area_size.toLocaleString()} {t('properties.sqft')}</span>
+              <span>{property.area_size.toLocaleString()} {areaUnit}</span>
             </div>
           )}
         </div>

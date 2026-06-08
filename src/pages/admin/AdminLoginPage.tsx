@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Lock, Home, AlertCircle } from 'lucide-react';
+import { Lock, Home, AlertCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useApp } from '../../contexts/AppContext';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import BrandLogo from '../../components/BrandLogo';
 
 export default function AdminLoginPage() {
   const { t } = useApp();
@@ -33,11 +34,18 @@ export default function AdminLoginPage() {
       }
 
       if (data.user) {
+        console.log('[AdminLogin] signed in', { userId: data.user.id, email: data.user.email });
         const { data: adminData, error: adminError } = await supabase
           .from('admin_users')
-          .select('id')
-          .eq('email', email)
+          .select('id, auth_user_id, email')
+          .eq('auth_user_id', data.user.id)
           .maybeSingle();
+
+        console.log('[AdminLogin] admin_users lookup', {
+          userId: data.user.id,
+          adminData,
+          error: adminError?.message ?? null,
+        });
 
         if (adminError) throw adminError;
 
@@ -70,9 +78,10 @@ export default function AdminLoginPage() {
 
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-luxury-gold rounded-xl flex items-center justify-center mx-auto mb-4">
-            <Building2 className="w-10 h-10 text-white" />
-          </div>
+          <BrandLogo
+            loading="eager"
+            className="h-10 w-auto max-w-[min(80vw,280px)] mx-auto mb-4 md:h-[50px] lg:h-[55px]"
+          />
           <h1 className="font-display text-3xl font-bold text-secondary-900 dark:text-white mb-2">
             {t('admin.title')}
           </h1>

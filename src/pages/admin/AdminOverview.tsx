@@ -34,7 +34,7 @@ export default function AdminOverview() {
         ]);
 
         const totalValue = (propertiesResult.data || [])
-          .filter((p) => p.status === 'available')
+          .filter((p) => p.status === 'for_sale')
           .reduce((sum, p) => sum + Number(p.price), 0);
 
         setStats({

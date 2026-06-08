@@ -2,6 +2,7 @@ import { useParams, Link } from 'react-router-dom';
 import { MapPin, Bed, Bath, Square, Play, Phone, Mail, MessageCircle } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { useProperty, useProperties } from '../hooks/useFetchProperties';
+import { getLocationLabel } from '../lib/propertyUtils';
 import ImageGallery from '../components/ImageGallery';
 import PropertyCard from '../components/PropertyCard';
 import Loading from '../components/Loading';
@@ -11,7 +12,12 @@ export default function PropertyDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const { t, language } = useApp();
   const { property, loading, error } = useProperty(id!);
-  const { properties: similarProperties, loading: similarLoading } = useProperties();
+  const { properties: similarProperties } = useProperties({
+    propertyType: undefined,
+    status: 'for_sale',
+    page: 0,
+    pageSize: 20,
+  });
 
   if (loading) {
     return (
@@ -35,6 +41,18 @@ export default function PropertyDetailsPage() {
 
   const title = property.title[language as Language] || property.title.en;
   const description = property.description[language as Language] || property.description.en;
+  const locationLabel = getLocationLabel(property);
+  const displayAddress =
+    property.full_address || property.address || locationLabel || property.location;
+  const hasMapCoordinates =
+    property.map_lat != null &&
+    property.map_lng != null &&
+    !Number.isNaN(property.map_lat) &&
+    !Number.isNaN(property.map_lng);
+  const mapEmbedUrl = hasMapCoordinates
+    ? `https://maps.google.com/maps?q=${property.map_lat},${property.map_lng}&z=15&output=embed`
+    : null;
+  const areaUnit = property.area_unit === 'sqm' ? 'm²' : t('properties.sqft');
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`I'm interested in: ${title} - $${property.price.toLocaleString()}`)}`;
   const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(`Check out this property: ${title}`)}`;
 
@@ -59,13 +77,13 @@ export default function PropertyDetailsPage() {
               </h1>
               <div className="flex items-center text-secondary-600 dark:text-secondary-400">
                 <MapPin className="w-5 h-5 mr-2 text-luxury-gold" />
-                <span>{property.location}</span>
+                <span>{locationLabel}</span>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <span
                 className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                  property.status === 'available'
+                  property.status === 'for_sale'
                     ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
                     : property.status === 'sold'
                     ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
@@ -131,7 +149,7 @@ export default function PropertyDetailsPage() {
                   <div className="text-center">
                     <Square className="w-6 h-6 mx-auto mb-2 text-luxury-gold" />
                     <div className="font-semibold text-secondary-900 dark:text-white">{property.area_size.toLocaleString()}</div>
-                    <div className="text-xs text-secondary-600 dark:text-secondary-400">{t('properties.sqft')}</div>
+                    <div className="text-xs text-secondary-600 dark:text-secondary-400">{areaUnit}</div>
                   </div>
                 )}
               </div>
@@ -207,14 +225,28 @@ export default function PropertyDetailsPage() {
               </div>
             )}
 
-            {property.address && (
+            {(displayAddress || hasMapCoordinates) && (
               <div className="bg-white dark:bg-secondary-900 rounded-xl shadow-lg p-8" id="contact-form">
                 <h2 className="font-display text-2xl font-semibold text-secondary-900 dark:text-white mb-4">
                   {t('propertyDetails.address')}
                 </h2>
-                <p className="text-secondary-700 dark:text-secondary-300">{property.address}</p>
+                {displayAddress && (
+                  <p className="text-secondary-700 dark:text-secondary-300">{displayAddress}</p>
+                )}
 
-                <div className="h-[300px] mt-6 rounded-xl overflow-hidden bg-secondary-100 dark:bg-secondary-800" />
+                {mapEmbedUrl ? (
+                  <div className="h-[300px] mt-6 rounded-xl overflow-hidden bg-secondary-100 dark:bg-secondary-800">
+                    <iframe
+                      src={mapEmbedUrl}
+                      className="w-full h-full border-0"
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Property location map"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-[300px] mt-6 rounded-xl overflow-hidden bg-secondary-100 dark:bg-secondary-800" />
+                )}
               </div>
             )}
           </div>

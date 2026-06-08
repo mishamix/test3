@@ -4,6 +4,7 @@ import { Menu, X, Home, Building2, Info, Phone, Settings } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import ThemeToggle from './ThemeToggle';
 import LanguageSwitcher from './LanguageSwitcher';
+import BrandLogo from './BrandLogo';
 
 export default function Navbar() {
   const { t } = useApp();
@@ -46,13 +47,15 @@ export default function Navbar() {
     >
       <nav className="container-custom">
         <div className="flex items-center justify-between h-16 md:h-20">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-luxury-gold rounded-lg flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-white" />
-            </div>
-            <span className="font-display text-xl font-bold text-secondary-950 dark:text-white tracking-tight">
-              Luxury<span className="text-luxury-gold">Estates</span>
-            </span>
+          <Link
+            to="/"
+            className="brand-logo-link flex items-center shrink-0 min-w-0 max-w-[44%] sm:max-w-[40%] md:max-w-[300px] bg-transparent"
+          >
+            <BrandLogo
+              loading="eager"
+              fetchPriority="high"
+              className="h-10 w-auto max-w-full md:h-[50px] lg:h-[55px]"
+            />
           </Link>
 
           <div className="hidden md:flex items-center gap-1">

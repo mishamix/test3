@@ -40,7 +40,7 @@ export default {
   properties: {
     title: 'Недвижимость',
     subtitle: 'Исследуйте нашу эксклюзивную коллекцию роскошной недвижимости',
-    featured: 'Рекомендуемые',
+    featured: 'Топ объекты',
     viewAll: 'Смотреть все',
     allProperties: 'Все объекты',
     filters: 'Фильтры',
@@ -57,9 +57,9 @@ export default {
     priceRange: 'Диапазон цен',
     location: 'Локация',
     status: {
-      available: 'Доступно',
+      for_sale: 'В продаже',
       sold: 'Продано',
-      reserved: 'Зарезервировано',
+      rented: 'Сдано в аренду',
     },
     types: {
       house: 'Дом',
@@ -156,7 +156,7 @@ export default {
     removeImage: 'Удалить изображение',
     imageUrl: 'URL изображения',
     dragImages: 'Перетащите изображения сюда или нажмите для загрузки',
-    featured: 'Рекомендовано',
+    featured: 'Топ',
     yes: 'Да',
     no: 'Нет',
     inquiries: {

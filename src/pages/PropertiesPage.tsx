@@ -4,7 +4,7 @@ import { Search, Grid, List, X } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { useProperties } from '../hooks/useFetchProperties';
 import PropertyCard from '../components/PropertyCard';
-import Loading, { SkeletonCard } from '../components/Loading';
+import { SkeletonCard } from '../components/Loading';
 import Input from '../components/Input';
 import Select from '../components/Select';
 
@@ -12,22 +12,57 @@ export default function PropertiesPage() {
   const { t } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [showFilters, setShowFilters] = useState(false);
 
   const [filters, setFilters] = useState({
-    location: searchParams.get('location') || '',
+    search: searchParams.get('location') || searchParams.get('search') || '',
     propertyType: searchParams.get('type') || 'all',
-    minPrice: '',
-    maxPrice: '',
+    status: searchParams.get('status') || 'all',
+    minPrice: searchParams.get('minPrice') || '',
+    maxPrice: searchParams.get('maxPrice') || '',
+    minBedrooms: searchParams.get('bedrooms') || 'all',
+    minBathrooms: searchParams.get('bathrooms') || 'all',
+    sortBy: (searchParams.get('sort') as 'newest' | 'price-asc' | 'price-desc') || 'newest',
   });
 
-  const { properties, loading } = useProperties({
-    location: filters.location || undefined,
-    propertyType: filters.propertyType !== 'all' ? filters.propertyType : undefined,
-    minPrice: filters.minPrice ? Number(filters.minPrice) : undefined,
-    maxPrice: filters.maxPrice ? Number(filters.maxPrice) : undefined,
-    featured: searchParams.get('featured') === 'true' || undefined,
-  });
+  const [debouncedSearch, setDebouncedSearch] = useState(filters.search);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setDebouncedSearch(filters.search);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [filters.search]);
+
+  const queryFilters = useMemo(
+    () => ({
+      search: debouncedSearch.trim() || undefined,
+      propertyType: filters.propertyType !== 'all' ? filters.propertyType : undefined,
+      status: filters.status !== 'all' ? filters.status : undefined,
+      minPrice: filters.minPrice ? Number(filters.minPrice) : undefined,
+      maxPrice: filters.maxPrice ? Number(filters.maxPrice) : undefined,
+      minBedrooms:
+        filters.minBedrooms !== 'all' ? Number(filters.minBedrooms) : undefined,
+      minBathrooms:
+        filters.minBathrooms !== 'all' ? Number(filters.minBathrooms) : undefined,
+      featured: searchParams.get('featured') === 'true' || undefined,
+      sortBy: filters.sortBy,
+      page: 0,
+      pageSize: 12,
+    }),
+    [
+      debouncedSearch,
+      filters.propertyType,
+      filters.status,
+      filters.minPrice,
+      filters.maxPrice,
+      filters.minBedrooms,
+      filters.minBathrooms,
+      filters.sortBy,
+      searchParams,
+    ]
+  );
+
+  const { properties, loading, loadingMore, hasMore, total, loadMore } = useProperties(queryFilters);
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -35,23 +70,42 @@ export default function PropertiesPage() {
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    if (filters.location) params.set('location', filters.location);
+    if (filters.search) params.set('location', filters.search);
     if (filters.propertyType !== 'all') params.set('type', filters.propertyType);
+    if (filters.status !== 'all') params.set('status', filters.status);
+    if (filters.minPrice) params.set('minPrice', filters.minPrice);
+    if (filters.maxPrice) params.set('maxPrice', filters.maxPrice);
+    if (filters.minBedrooms !== 'all') params.set('bedrooms', filters.minBedrooms);
+    if (filters.minBathrooms !== 'all') params.set('bathrooms', filters.minBathrooms);
+    if (filters.sortBy !== 'newest') params.set('sort', filters.sortBy);
     setSearchParams(params);
   };
 
   const clearFilters = () => {
     setFilters({
-      location: '',
+      search: '',
       propertyType: 'all',
+      status: 'all',
       minPrice: '',
       maxPrice: '',
+      minBedrooms: 'all',
+      minBathrooms: 'all',
+      sortBy: 'newest',
     });
     setSearchParams({});
   };
 
   const hasActiveFilters = useMemo(() => {
-    return filters.location || filters.propertyType !== 'all' || filters.minPrice || filters.maxPrice;
+    return (
+      filters.search ||
+      filters.propertyType !== 'all' ||
+      filters.status !== 'all' ||
+      filters.minPrice ||
+      filters.maxPrice ||
+      filters.minBedrooms !== 'all' ||
+      filters.minBathrooms !== 'all' ||
+      filters.sortBy !== 'newest'
+    );
   }, [filters]);
 
   return (
@@ -67,8 +121,8 @@ export default function PropertiesPage() {
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Input
                 placeholder={t('properties.location')}
-                value={filters.location}
-                onChange={(e) => handleFilterChange('location', e.target.value)}
+                value={filters.search}
+                onChange={(e) => handleFilterChange('search', e.target.value)}
                 className="w-full"
               />
               <Select
@@ -97,6 +151,42 @@ export default function PropertiesPage() {
                 onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
                 className="w-full"
               />
+              <Select
+                value={filters.status}
+                onChange={(e) => handleFilterChange('status', e.target.value)}
+                options={[
+                  { value: 'all', label: 'All Statuses' },
+                  { value: 'for_sale', label: t('properties.status.for_sale') },
+                  { value: 'sold', label: t('properties.status.sold') },
+                  { value: 'rented', label: t('properties.status.rented') },
+                ]}
+                className="w-full"
+              />
+              <Select
+                value={filters.minBedrooms}
+                onChange={(e) => handleFilterChange('minBedrooms', e.target.value)}
+                options={[
+                  { value: 'all', label: t('properties.bedrooms') },
+                  { value: '1', label: '1+' },
+                  { value: '2', label: '2+' },
+                  { value: '3', label: '3+' },
+                  { value: '4', label: '4+' },
+                  { value: '5', label: '5+' },
+                ]}
+                className="w-full"
+              />
+              <Select
+                value={filters.minBathrooms}
+                onChange={(e) => handleFilterChange('minBathrooms', e.target.value)}
+                options={[
+                  { value: 'all', label: t('properties.bathrooms') },
+                  { value: '1', label: '1+' },
+                  { value: '2', label: '2+' },
+                  { value: '3', label: '3+' },
+                  { value: '4', label: '4+' },
+                ]}
+                className="w-full"
+              />
             </div>
             <div className="flex gap-2 w-full md:w-auto">
               <button onClick={handleSearch} className="btn btn-primary flex-1 md:flex-none">
@@ -115,15 +205,17 @@ export default function PropertiesPage() {
 
         <div className="flex items-center justify-between mb-6">
           <p className="text-secondary-600 dark:text-secondary-400">
-            {properties.length} {t('properties.allProperties').toLowerCase()} found
+            {loading ? '...' : total} {t('properties.allProperties').toLowerCase()} found
           </p>
           <div className="flex items-center gap-2">
             <span className="text-sm text-secondary-600 dark:text-secondary-400 hidden sm:inline">
               {t('properties.sortBy')}:
             </span>
             <Select
-              value=""
-              onChange={() => {}}
+              value={filters.sortBy}
+              onChange={(e) =>
+                handleFilterChange('sortBy', e.target.value as 'newest' | 'price-asc' | 'price-desc')
+              }
               options={[
                 { value: 'newest', label: t('properties.newest') },
                 { value: 'price-desc', label: t('properties.priceHighToLow') },
@@ -155,23 +247,30 @@ export default function PropertiesPage() {
             ))}
           </div>
         ) : properties.length > 0 ? (
-          <div
-            className={
-              viewMode === 'grid'
-                ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
-                : 'space-y-6'
-            }
-          >
-            {properties.map((property) => (
-              viewMode === 'grid' ? (
+          <>
+            <div
+              className={
+                viewMode === 'grid'
+                  ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
+                  : 'space-y-6'
+              }
+            >
+              {properties.map((property) => (
                 <PropertyCard key={property.id} property={property} />
-              ) : (
-                <div key={property.id}>
-                  <PropertyCard property={property} />
-                </div>
-              )
-            ))}
-          </div>
+              ))}
+            </div>
+            {hasMore && (
+              <div className="text-center mt-10">
+                <button
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                  className="btn btn-primary"
+                >
+                  {loadingMore ? t('common.loading') : 'Load More'}
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-20">
             <div className="w-20 h-20 rounded-full bg-secondary-100 dark:bg-secondary-800 flex items-center justify-center mx-auto mb-4">

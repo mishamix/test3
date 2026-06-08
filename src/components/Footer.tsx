@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { Building2, MapPin, Phone, Mail, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
+import { MapPin, Phone, Mail, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
+import BrandLogo from './BrandLogo';
 
 export default function Footer() {
   const { t } = useApp();
@@ -12,13 +13,8 @@ export default function Footer() {
       <div className="container-custom py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div>
-            <Link to="/" className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 bg-luxury-gold rounded-lg flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-white" />
-              </div>
-              <span className="font-display text-xl font-bold text-white">
-                Luxury<span className="text-luxury-gold">Estates</span>
-              </span>
+            <Link to="/" className="brand-logo-link inline-flex items-center mb-6 bg-transparent">
+              <BrandLogo className="h-10 w-auto max-w-[220px] md:h-[50px] lg:h-[55px]" />
             </Link>
             <p className="text-secondary-400 mb-6 leading-relaxed">
               Your trusted partner in luxury real estate. We connect discerning buyers with exceptional properties in the world's most prestigious locations.
@@ -114,7 +110,7 @@ export default function Footer() {
       <div className="border-t border-secondary-800">
         <div className="container-custom py-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-secondary-500 text-sm">
-            © {currentYear} Luxury Estates. {t('footer.rights')}
+            © {currentYear} Anastelle Immo. {t('footer.rights')}
           </p>
           <div className="flex items-center gap-6 text-sm">
             <a href="#" className="text-secondary-500 hover:text-secondary-300 transition-colors">

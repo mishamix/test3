@@ -40,7 +40,7 @@ export default {
   properties: {
     title: 'Propriétés',
     subtitle: 'Explorez notre collection exclusive de propriétés de luxe',
-    featured: 'Propriétés en vedette',
+    featured: 'Propriétés top',
     viewAll: 'Voir tout',
     allProperties: 'Toutes les propriétés',
     filters: 'Filtres',
@@ -57,9 +57,9 @@ export default {
     priceRange: 'Gamme de prix',
     location: 'Emplacement',
     status: {
-      available: 'Disponible',
+      for_sale: 'À vendre',
       sold: 'Vendu',
-      reserved: 'Réservé',
+      rented: 'Loué',
     },
     types: {
       house: 'Maison',
@@ -156,7 +156,7 @@ export default {
     removeImage: 'Supprimer l\'image',
     imageUrl: 'URL de l\'image',
     dragImages: 'Glissez et déposez des images ici ou cliquez pour télécharger',
-    featured: 'En vedette',
+    featured: 'Top',
     yes: 'Oui',
     no: 'Non',
     inquiries: {

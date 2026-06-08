@@ -50,16 +50,16 @@ export default function HomePage() {
         <div className="absolute inset-0">
           <img
             src="/hero-luxury-interior.png"
-            alt="Luxury sea-view villa interior"
+            alt="Luxury countryside estate at golden sunset"
             loading="eager"
             decoding="async"
             fetchPriority="high"
-            className="w-full h-full object-cover object-center scale-[0.985] md:scale-100 transition-transform duration-[5000ms] ease-out [image-rendering:auto]"
-            style={{ filter: 'contrast(1.04) saturate(1.05)' }}
+            className="w-full h-full object-cover object-center sm:object-[center_42%] lg:object-center scale-100 transition-transform duration-[5000ms] ease-out"
+            style={{ filter: 'contrast(1.03) saturate(1.08)' }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-secondary-950/42 via-secondary-900/16 to-secondary-950/34" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/24 via-black/8 to-transparent" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_35%,rgba(0,0,0,0.02),rgba(0,0,0,0.2))]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/48 via-black/18 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/10" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,rgba(0,0,0,0.25),transparent_55%)]" />
         </div>
 
         <div className="relative z-10 container-custom w-full pb-16 md:pb-20 lg:pb-24">
@@ -67,7 +67,7 @@ export default function HomePage() {
             <h1 className="font-display text-4xl md:text-5xl lg:text-7xl font-bold mb-5 animate-fade-in-up animate-delay-200">
               {t('hero.title')}
             </h1>
-            <p className="text-lg md:text-xl text-secondary-200/95 max-w-2xl mb-8 md:mb-10 animate-fade-in-up animate-delay-400">
+            <p className="text-lg md:text-xl text-white/90 max-w-2xl mb-8 md:mb-10 drop-shadow-sm animate-fade-in-up animate-delay-400">
               {t('hero.subtitle')}
             </p>
 

@@ -40,7 +40,7 @@ export default {
   properties: {
     title: 'Properties',
     subtitle: 'Explore our exclusive collection of luxury properties',
-    featured: 'Featured Properties',
+    featured: 'Top Properties',
     viewAll: 'View All',
     allProperties: 'All Properties',
     filters: 'Filters',
@@ -57,9 +57,9 @@ export default {
     priceRange: 'Price Range',
     location: 'Location',
     status: {
-      available: 'Available',
+      for_sale: 'For Sale',
       sold: 'Sold',
-      reserved: 'Reserved',
+      rented: 'Rented',
     },
     types: {
       house: 'House',
@@ -156,7 +156,7 @@ export default {
     removeImage: 'Remove Image',
     imageUrl: 'Image URL',
     dragImages: 'Drag and drop images here or click to upload',
-    featured: 'Featured',
+    featured: 'Top',
     yes: 'Yes',
     no: 'No',
     inquiries: {
