@@ -7,20 +7,24 @@
 @layer base {
   html {
     scroll-behavior: smooth;
-    transition: background-color 450ms ease-in-out, color 450ms ease-in-out;
+    transition: background-color 450ms ease-out, color 450ms ease-out;
   }
 
   body {
     @apply font-sans text-secondary-800 dark:text-secondary-100 bg-luxury-cream dark:bg-secondary-950 antialiased;
-    transition: background-color 450ms ease-in-out, color 450ms ease-in-out;
+    transition: background-color 450ms ease-out, color 450ms ease-out;
   }
 
   *,
   *::before,
   *::after {
     transition-property: background-color, color, border-color, box-shadow, opacity, backdrop-filter, fill, stroke;
-    transition-duration: 450ms;
-    transition-timing-function: ease-in-out;
+    transition-duration: 300ms;
+    transition-timing-function: ease-out;
+  }
+
+  img {
+    @apply transition-transform duration-500 ease-out;
   }
 }
 
@@ -29,36 +33,37 @@
   *::before,
   *::after {
     transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
   }
 }
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center px-6 py-3 font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center px-6 py-3 font-medium rounded-lg transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
 
   .btn-primary {
-    @apply bg-luxury-gold text-white hover:bg-luxury-goldDark shadow-sm hover:shadow-md focus:ring-luxury-gold;
+    @apply bg-luxury-gold text-white hover:bg-luxury-goldDark shadow-sm hover:shadow-md active:shadow-sm focus:ring-luxury-gold;
   }
 
   .btn-secondary {
-    @apply bg-secondary-900 dark:bg-secondary-100 text-white dark:text-secondary-900 hover:bg-secondary-800 dark:hover:bg-secondary-200 focus:ring-secondary-500;
+    @apply bg-secondary-900 dark:bg-secondary-100 text-white dark:text-secondary-900 hover:bg-secondary-800 dark:hover:bg-secondary-200 active:bg-secondary-700 dark:active:bg-secondary-300 focus:ring-secondary-500;
   }
 
   .btn-outline {
-    @apply border-2 border-luxury-gold text-luxury-gold bg-white/80 dark:bg-transparent hover:bg-luxury-gold hover:text-white focus:ring-luxury-gold;
+    @apply border-2 border-luxury-gold text-luxury-gold bg-white/80 dark:bg-transparent hover:bg-luxury-gold hover:text-white active:bg-luxury-goldDark focus:ring-luxury-gold;
   }
 
   .btn-outline-white {
-    @apply border-2 border-white text-white hover:bg-white hover:text-secondary-900 focus:ring-white;
+    @apply border-2 border-white text-white hover:bg-white hover:text-secondary-900 active:bg-secondary-100 focus:ring-white;
   }
 
   .btn-ghost {
-    @apply bg-transparent text-secondary-800 dark:text-secondary-200 hover:bg-secondary-100 dark:hover:bg-secondary-800;
+    @apply bg-transparent text-secondary-800 dark:text-secondary-200 hover:bg-secondary-100 dark:hover:bg-secondary-800 active:bg-secondary-200 dark:active:bg-secondary-700;
   }
 
   .input {
-    @apply w-full px-4 py-3 rounded-lg bg-white dark:bg-secondary-900 border border-secondary-300 dark:border-secondary-700 text-secondary-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-luxury-gold focus:border-transparent placeholder-secondary-500 dark:placeholder-secondary-500;
+    @apply w-full px-4 py-3 rounded-lg bg-white dark:bg-secondary-900 border border-secondary-300 dark:border-secondary-700 text-secondary-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-luxury-gold focus:border-transparent placeholder-secondary-500 dark:placeholder-secondary-500 transition-all duration-300;
   }
 
   .label {
@@ -66,7 +71,7 @@
   }
 
   .card {
-    @apply bg-white dark:bg-secondary-900 rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl;
+    @apply bg-white dark:bg-secondary-900 rounded-xl shadow-lg overflow-hidden transition-all duration-500 ease-out hover:shadow-xl hover:shadow-luxury-gold/5;
   }
 
   .section-heading {
@@ -93,11 +98,12 @@
     mask-image: none;
     -webkit-mask-image: none;
     isolation: isolate;
-    transition: opacity 300ms ease-in-out;
+    transition: opacity 300ms ease-out, transform 300ms ease-out;
   }
 
   .brand-logo-link:hover {
-    opacity: 0.88;
+    opacity: 0.9;
+    transform: scale(1.02);
   }
 
   .brand-logo {
@@ -114,7 +120,9 @@
     mask-image: none;
     -webkit-mask-image: none;
     isolation: isolate;
-    transition-property: opacity;
+    transition-property: opacity, filter;
+    transition-duration: 500ms;
+    transition-timing-function: ease-out;
   }
 
   .hero-gradient {
@@ -139,6 +147,10 @@
     animation-delay: 600ms;
   }
 
+  .animate-delay-800 {
+    animation-delay: 800ms;
+  }
+
   .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -151,6 +163,47 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+
+  .animate-shake {
+    animation: shake 0.5s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
   }
 }
 

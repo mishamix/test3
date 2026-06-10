@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Grid, List, X } from 'lucide-react';
+import { Search, Grid2x2 as Grid, List, X } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { useProperties } from '../hooks/useFetchProperties';
 import PropertyCard from '../components/PropertyCard';
@@ -8,13 +8,20 @@ import { SkeletonCard } from '../components/Loading';
 import Input from '../components/Input';
 import Select from '../components/Select';
 
+const ALLOWED_CITIES = [
+  { value: '', label: 'All Cities' },
+  { value: 'Casablanca', label: 'Casablanca' },
+  { value: 'Tanger', label: 'Tanger' },
+  { value: 'Marrakech', label: 'Marrakech' },
+];
+
 export default function PropertiesPage() {
   const { t } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const [filters, setFilters] = useState({
-    search: searchParams.get('location') || searchParams.get('search') || '',
+    search: searchParams.get('location') || '',
     propertyType: searchParams.get('type') || 'all',
     status: searchParams.get('status') || 'all',
     minPrice: searchParams.get('minPrice') || '',
@@ -116,13 +123,13 @@ export default function PropertiesPage() {
           <p className="section-subheading">{t('properties.subtitle')}</p>
         </div>
 
-        <div className="bg-white dark:bg-secondary-900 rounded-xl shadow-lg p-4 md:p-6 mb-8">
+        <div className="bg-white dark:bg-secondary-900 rounded-xl shadow-lg p-4 md:p-6 mb-8 transition-all duration-300">
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-end justify-between">
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Input
-                placeholder={t('properties.location')}
+              <Select
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
+                options={ALLOWED_CITIES.map(c => ({ value: c.value, label: c.label }))}
                 className="w-full"
               />
               <Select
@@ -189,12 +196,12 @@ export default function PropertiesPage() {
               />
             </div>
             <div className="flex gap-2 w-full md:w-auto">
-              <button onClick={handleSearch} className="btn btn-primary flex-1 md:flex-none">
+              <button onClick={handleSearch} className="btn btn-primary flex-1 md:flex-none transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
                 <Search className="w-4 h-4 mr-2" />
                 {t('common.search')}
               </button>
               {hasActiveFilters && (
-                <button onClick={clearFilters} className="btn btn-ghost">
+                <button onClick={clearFilters} className="btn btn-ghost transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
                   <X className="w-4 h-4 mr-2" />
                   {t('common.clear')}
                 </button>
@@ -226,13 +233,13 @@ export default function PropertiesPage() {
             <div className="hidden sm:flex items-center gap-1 border border-secondary-200 dark:border-secondary-700 rounded-lg p-1">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded ${viewMode === 'grid' ? 'bg-luxury-gold text-white' : 'hover:bg-secondary-100 dark:hover:bg-secondary-800'}`}
+                className={`p-2 rounded transition-all duration-200 ${viewMode === 'grid' ? 'bg-luxury-gold text-white' : 'hover:bg-secondary-100 dark:hover:bg-secondary-800'}`}
               >
                 <Grid className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded ${viewMode === 'list' ? 'bg-luxury-gold text-white' : 'hover:bg-secondary-100 dark:hover:bg-secondary-800'}`}
+                className={`p-2 rounded transition-all duration-200 ${viewMode === 'list' ? 'bg-luxury-gold text-white' : 'hover:bg-secondary-100 dark:hover:bg-secondary-800'}`}
               >
                 <List className="w-4 h-4" />
               </button>
@@ -264,7 +271,7 @@ export default function PropertiesPage() {
                 <button
                   onClick={loadMore}
                   disabled={loadingMore}
-                  className="btn btn-primary"
+                  className="btn btn-primary transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:scale-100"
                 >
                   {loadingMore ? t('common.loading') : 'Load More'}
                 </button>
@@ -280,7 +287,7 @@ export default function PropertiesPage() {
               {t('properties.noResults')}
             </h3>
             <p className="text-secondary-500 mb-6">Try adjusting your search filters</p>
-            <button onClick={clearFilters} className="btn btn-primary">
+            <button onClick={clearFilters} className="btn btn-primary transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
               Clear Filters
             </button>
           </div>

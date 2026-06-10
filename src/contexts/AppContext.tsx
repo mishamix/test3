@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, ReactNode, useState, useCallback, useRef } from 'react';
 import { useLanguage, useTheme } from '../hooks/useFetch';
 import { Language, Theme } from '../types';
 import { getTranslation, getLangDirection } from '../i18n';
@@ -11,16 +11,32 @@ interface AppContextType {
   toggleTheme: () => void;
   t: (key: string) => string;
   dir: 'rtl' | 'ltr';
+  isLanguageTransitioning: boolean;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage: baseSetLanguage } = useLanguage();
   const { theme, setTheme, toggleTheme } = useTheme();
+  const [isLanguageTransitioning, setIsLanguageTransitioning] = useState(false);
+  const scrollRef = useRef(0);
 
   const t = (key: string): string => getTranslation(language, key);
   const dir = getLangDirection(language);
+
+  const setLanguage = useCallback((lang: Language) => {
+    scrollRef.current = window.scrollY;
+    setIsLanguageTransitioning(true);
+
+    setTimeout(() => {
+      baseSetLanguage(lang);
+      setTimeout(() => {
+        window.scrollTo(0, scrollRef.current);
+        setIsLanguageTransitioning(false);
+      }, 50);
+    }, 150);
+  }, [baseSetLanguage]);
 
   const value: AppContextType = {
     language,
@@ -30,9 +46,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     toggleTheme,
     t,
     dir,
+    isLanguageTransitioning,
   };
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={value}>
+      <div
+        className={`transition-opacity duration-300 ease-out ${
+          isLanguageTransitioning ? 'opacity-0' : 'opacity-100'
+        }`}
+      >
+        {children}
+      </div>
+    </AppContext.Provider>
+  );
 }
 
 export function useApp() {

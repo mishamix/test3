@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Edit, Trash2, Eye, X, Check } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Plus, CreditCard as Edit, Trash2, Check } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useApp } from '../../contexts/AppContext';
 import { Property, Language } from '../../types';
-import Loading, { SkeletonCard } from '../../components/Loading';
+import { SkeletonCard } from '../../components/Loading';
 import Modal from '../../components/Modal';
 import { useToast } from '../../contexts/ToastContext';
 
 export default function AdminProperties() {
   const { t, language } = useApp();
-  const navigate = useNavigate();
   const toast = useToast();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,24 +74,6 @@ export default function AdminProperties() {
       );
     } catch (error) {
       console.error('Error updating property:', error);
-    }
-  };
-
-  const updateStatus = async (propertyId: string, status: string) => {
-    try {
-      const { error } = await supabase
-        .from('properties')
-        .update({ status })
-        .eq('id', propertyId);
-
-      if (error) throw error;
-      setProperties(
-        properties.map((p) =>
-          p.id === propertyId ? { ...p, status: status as any } : p
-        )
-      );
-    } catch (error) {
-      console.error('Error updating status:', error);
     }
   };
 

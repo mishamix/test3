@@ -13,6 +13,8 @@ import { useToast } from '../../contexts/ToastContext';
 
 const LANGUAGES: Language[] = ['en', 'uk', 'ru', 'fr', 'ar'];
 
+const ALLOWED_CITIES = ['Casablanca', 'Tanger', 'Marrakech'];
+
 const trimSafe = (value: unknown): string =>
   typeof value === 'string' ? value.trim() : '';
 
@@ -53,7 +55,7 @@ const createInitialFormData = () => ({
   area_size: '',
   area_unit: 'sqft',
   city: '',
-  country: '',
+  country: 'Morocco',
   full_address: '',
   thumbnail_url: '',
   features: [] as string[],
@@ -155,7 +157,7 @@ export default function AdminPropertyForm() {
           location: data.location || '',
           address: data.address || '',
           city: data.city || '',
-          country: data.country || '',
+          country: data.country || 'Morocco',
           full_address: data.full_address || '',
           thumbnail_url: thumbnailUrl,
           property_type: data.property_type || 'house',
@@ -287,7 +289,6 @@ export default function AdminPropertyForm() {
       const u = new URL(url);
       const host = u.hostname.replace('www.', '');
 
-      // YouTube
       if (host === 'youtube.com' || host === 'm.youtube.com') {
         const v = u.searchParams.get('v');
         if (v) return `https://www.youtube.com/embed/${v}`;
@@ -298,7 +299,6 @@ export default function AdminPropertyForm() {
         if (id) return `https://www.youtube.com/embed/${id}`;
       }
 
-      // Vimeo
       if (host === 'vimeo.com') {
         const id = u.pathname.split('/').filter(Boolean)[0];
         if (id) return `https://player.vimeo.com/video/${id}`;
@@ -432,19 +432,23 @@ export default function AdminPropertyForm() {
   const validate = () => {
     const enTitle = trimSafe(formData.title?.en);
     const city = trimSafe(formData.city);
-    const country = trimSafe(formData.country);
     const price = Number(formData.price);
 
-    console.log('[Validate]', { enTitle, city, country, price, pendingFiles: pendingFiles.length });
+    console.log('[Validate]', { enTitle, city, price, pendingFiles: pendingFiles.length });
 
     if (!enTitle) {
       setError('English title is required');
       console.log('[Validate] failed: English title is required');
       return false;
     }
-    if (!city || !country) {
-      setError('City and country are required');
-      console.log('[Validate] failed: City and country are required');
+    if (!city) {
+      setError('City is required. Please select Casablanca, Tanger, or Marrakech.');
+      console.log('[Validate] failed: City is required');
+      return false;
+    }
+    if (!ALLOWED_CITIES.includes(city)) {
+      setError(`Invalid city. Only Casablanca, Tanger, and Marrakech are allowed.`);
+      console.log('[Validate] failed: Invalid city');
       return false;
     }
     if (!formData.price || Number.isNaN(price) || price <= 0) {
@@ -466,9 +470,8 @@ export default function AdminPropertyForm() {
 
     try {
       const city = trimSafe(formData.city);
-      const country = trimSafe(formData.country);
       const displayLocation =
-        trimSafe(formData.location) || (city && country ? `${city}, ${country}` : city || country);
+        trimSafe(formData.location) || city;
 
       const propertyData = {
         title: normalizeMultilingualText(formData.title),
@@ -478,7 +481,7 @@ export default function AdminPropertyForm() {
         location: displayLocation,
         address: trimSafe(formData.address) || null,
         city: city || null,
-        country: country || null,
+        country: 'Morocco',
         full_address: trimSafe(formData.full_address) || null,
         thumbnail_url: trimSafe(formData.thumbnail_url) || null,
         property_type: formData.property_type || 'house',
@@ -595,7 +598,7 @@ export default function AdminPropertyForm() {
     <div className="max-w-4xl mx-auto">
       <button
         onClick={() => navigate('/admin/properties')}
-        className="flex items-center gap-2 text-secondary-600 dark:text-secondary-400 hover:text-luxury-gold mb-6"
+        className="flex items-center gap-2 text-secondary-600 dark:text-secondary-400 hover:text-luxury-gold mb-6 transition-colors duration-300"
       >
         <ArrowLeft className="w-5 h-5" />
         Back to Properties
@@ -661,33 +664,38 @@ export default function AdminPropertyForm() {
                 { value: 'USD', label: 'USD' },
                 { value: 'EUR', label: 'EUR' },
                 { value: 'AED', label: 'AED' },
+                { value: 'MAD', label: 'MAD' },
               ]}
             />
-            <Input
+            <Select
               name="city"
               label="City *"
               value={formData.city}
               onChange={handleChange}
-              placeholder="Cotswolds"
+              options={[
+                { value: '', label: 'Select city...' },
+                { value: 'Casablanca', label: 'Casablanca' },
+                { value: 'Tanger', label: 'Tanger' },
+                { value: 'Marrakech', label: 'Marrakech' },
+              ]}
               required
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Input
-              name="country"
-              label="Country *"
-              value={formData.country}
-              onChange={handleChange}
-              placeholder="United Kingdom"
-              required
-            />
-            <Input
               name="location"
               label="Display Location (optional)"
               value={formData.location}
               onChange={handleChange}
-              placeholder="Cotswolds, UK"
+              placeholder="Neighborhood, district..."
+            />
+            <Input
+              name="address"
+              label="Street Address (optional)"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="Street name and number"
             />
             <Input
               name="thumbnail_url"
@@ -748,25 +756,26 @@ export default function AdminPropertyForm() {
             />
           </div>
 
-          <Input
-            name="area_size"
-            type="number"
-            label="Area Size"
-            value={formData.area_size}
-            onChange={handleChange}
-            placeholder="5000"
-          />
-
-          <Select
-            name="area_unit"
-            label="Area Unit"
-            value={formData.area_unit}
-            onChange={handleChange}
-            options={[
-              { value: 'sqft', label: 'sq ft' },
-              { value: 'sqm', label: 'm²' },
-            ]}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              name="area_size"
+              type="number"
+              label="Area Size"
+              value={formData.area_size}
+              onChange={handleChange}
+              placeholder="5000"
+            />
+            <Select
+              name="area_unit"
+              label="Area Unit"
+              value={formData.area_unit}
+              onChange={handleChange}
+              options={[
+                { value: 'sqft', label: 'sq ft' },
+                { value: 'sqm', label: 'm²' },
+              ]}
+            />
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Input
@@ -795,7 +804,7 @@ export default function AdminPropertyForm() {
                 name="has_pool"
                 checked={formData.has_pool}
                 onChange={handleChange}
-                className="w-5 h-5 rounded border-secondary-300 text-luxury-gold focus:ring-luxury-gold"
+                className="w-5 h-5 rounded border-secondary-300 text-luxury-gold focus:ring-luxury-gold transition-colors"
               />
               <label htmlFor="has_pool" className="text-secondary-900 dark:text-white">
                 Swimming pool
@@ -808,7 +817,7 @@ export default function AdminPropertyForm() {
                 name="has_garden"
                 checked={formData.has_garden}
                 onChange={handleChange}
-                className="w-5 h-5 rounded border-secondary-300 text-luxury-gold focus:ring-luxury-gold"
+                className="w-5 h-5 rounded border-secondary-300 text-luxury-gold focus:ring-luxury-gold transition-colors"
               />
               <label htmlFor="has_garden" className="text-secondary-900 dark:text-white">
                 Garden
@@ -823,7 +832,7 @@ export default function AdminPropertyForm() {
               label="Map Latitude (optional)"
               value={formData.map_lat}
               onChange={handleChange}
-              placeholder="51.5072"
+              placeholder="33.5731"
             />
             <Input
               name="map_lng"
@@ -831,7 +840,7 @@ export default function AdminPropertyForm() {
               label="Map Longitude (optional)"
               value={formData.map_lng}
               onChange={handleChange}
-              placeholder="-0.1276"
+              placeholder="-7.5898"
             />
           </div>
 
@@ -844,7 +853,7 @@ export default function AdminPropertyForm() {
                 placeholder="Swimming Pool"
                 className="flex-1"
               />
-              <button type="button" onClick={addFeature} className="btn btn-primary">
+              <button type="button" onClick={addFeature} className="btn btn-primary transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
                 <Plus className="w-4 h-4" />
               </button>
             </div>
@@ -852,10 +861,10 @@ export default function AdminPropertyForm() {
               {formData.features.map((feature, index) => (
                 <span
                   key={index}
-                  className="flex items-center gap-1 px-3 py-1 rounded-full bg-luxury-gold/10 text-secondary-900 dark:text-white"
+                  className="flex items-center gap-1 px-3 py-1 rounded-full bg-luxury-gold/10 text-secondary-900 dark:text-white transition-all duration-300 hover:bg-luxury-gold/20"
                 >
                   {feature}
-                  <button type="button" onClick={() => removeFeature(index)}>
+                  <button type="button" onClick={() => removeFeature(index)} className="hover:text-red-500 transition-colors">
                     <X className="w-4 h-4" />
                   </button>
                 </span>
@@ -872,7 +881,7 @@ export default function AdminPropertyForm() {
                 placeholder="https://example.com/image.jpg"
                 className="flex-1"
               />
-              <button type="button" onClick={addImage} className="btn btn-primary">
+              <button type="button" onClick={addImage} className="btn btn-primary transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
                 <Plus className="w-4 h-4" />
               </button>
             </div>
@@ -905,9 +914,9 @@ export default function AdminPropertyForm() {
                   e.stopPropagation();
                   onFilesSelected(e.dataTransfer.files);
                 }}
-                className="rounded-xl border-2 border-dashed border-secondary-300 dark:border-secondary-700 bg-secondary-50/70 dark:bg-secondary-800/40 p-6 text-center cursor-pointer hover:border-luxury-gold/70 transition-colors"
+                className="rounded-xl border-2 border-dashed border-secondary-300 dark:border-secondary-700 bg-secondary-50/70 dark:bg-secondary-800/40 p-6 text-center cursor-pointer hover:border-luxury-gold/70 transition-all duration-300 hover:bg-luxury-gold/5"
               >
-                <div className="w-12 h-12 rounded-xl bg-luxury-gold/10 flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 rounded-xl bg-luxury-gold/10 flex items-center justify-center mx-auto mb-3 transition-transform duration-300 group-hover:scale-110">
                   <Upload className="w-6 h-6 text-luxury-gold" />
                 </div>
                 <p className="text-sm text-secondary-700 dark:text-secondary-300">
@@ -932,7 +941,7 @@ export default function AdminPropertyForm() {
                         <button
                           type="button"
                           onClick={() => movePending(index, index - 1)}
-                          className="p-1.5 rounded bg-black/60 text-white"
+                          className="p-1.5 rounded bg-black/60 text-white hover:bg-black/80 transition-colors"
                           aria-label="Move up"
                         >
                           <ArrowUp className="w-4 h-4" />
@@ -940,7 +949,7 @@ export default function AdminPropertyForm() {
                         <button
                           type="button"
                           onClick={() => movePending(index, index + 1)}
-                          className="p-1.5 rounded bg-black/60 text-white"
+                          className="p-1.5 rounded bg-black/60 text-white hover:bg-black/80 transition-colors"
                           aria-label="Move down"
                         >
                           <ArrowDown className="w-4 h-4" />
@@ -949,7 +958,7 @@ export default function AdminPropertyForm() {
                       <button
                         type="button"
                         onClick={() => removePendingFile(index)}
-                        className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded opacity-0 group-hover:opacity-100 transition-all hover:bg-red-700"
                         aria-label="Remove"
                       >
                         <X className="w-4 h-4" />
@@ -968,7 +977,7 @@ export default function AdminPropertyForm() {
                     <button
                       type="button"
                       onClick={() => moveImage(index, index - 1)}
-                      className="p-1.5 rounded bg-black/60 text-white"
+                      className="p-1.5 rounded bg-black/60 text-white hover:bg-black/80 transition-colors"
                       aria-label="Move up"
                     >
                       <ArrowUp className="w-4 h-4" />
@@ -976,7 +985,7 @@ export default function AdminPropertyForm() {
                     <button
                       type="button"
                       onClick={() => moveImage(index, index + 1)}
-                      className="p-1.5 rounded bg-black/60 text-white"
+                      className="p-1.5 rounded bg-black/60 text-white hover:bg-black/80 transition-colors"
                       aria-label="Move down"
                     >
                       <ArrowDown className="w-4 h-4" />
@@ -985,7 +994,7 @@ export default function AdminPropertyForm() {
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
-                    className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded opacity-0 group-hover:opacity-100 transition-all hover:bg-red-700"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -1026,7 +1035,7 @@ export default function AdminPropertyForm() {
               name="is_featured"
               checked={formData.is_featured}
               onChange={handleChange}
-              className="w-5 h-5 rounded border-secondary-300 text-luxury-gold focus:ring-luxury-gold"
+              className="w-5 h-5 rounded border-secondary-300 text-luxury-gold focus:ring-luxury-gold transition-colors"
             />
             <label htmlFor="is_featured" className="text-secondary-900 dark:text-white">
               Mark as top property on homepage
@@ -1034,7 +1043,7 @@ export default function AdminPropertyForm() {
           </div>
 
           {error && (
-            <div className="p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg">
+            <div className="p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg animate-shake">
               {error}
             </div>
           )}
@@ -1043,7 +1052,7 @@ export default function AdminPropertyForm() {
             <button
               type="button"
               onClick={() => navigate('/admin/properties')}
-              className="btn btn-ghost"
+              className="btn btn-ghost transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
               {t('common.cancel')}
             </button>

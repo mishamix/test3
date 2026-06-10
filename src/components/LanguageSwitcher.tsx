@@ -11,7 +11,11 @@ const languages: { code: Language; name: string; flag: string }[] = [
   { code: 'ar', name: 'العربية', flag: '🇸🇦' },
 ];
 
-export default function LanguageSwitcher() {
+interface LanguageSwitcherProps {
+  variant?: 'light' | 'dark';
+}
+
+export default function LanguageSwitcher({ variant = 'light' }: LanguageSwitcherProps) {
   const { language, setLanguage } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -29,17 +33,23 @@ export default function LanguageSwitcher() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const isDarkVariant = variant === 'dark';
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-secondary-300/80 dark:border-zinc-600/70 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md hover:bg-white dark:hover:bg-zinc-800/90 shadow-md dark:shadow-black/40 transition-all duration-300"
+        className={`flex items-center gap-2 px-3 py-2 rounded-lg border backdrop-blur-md shadow-md transition-all duration-500 ${
+          isDarkVariant
+            ? 'border-white/30 bg-white/12 hover:bg-white/20 text-white'
+            : 'border-secondary-300/80 dark:border-zinc-600/70 bg-white/90 dark:bg-zinc-900/90 hover:bg-white dark:hover:bg-zinc-800/90 text-secondary-800 dark:text-secondary-100 shadow-black/40'
+        }`}
       >
-        <Globe className="w-4 h-4 text-secondary-800 dark:text-secondary-100" />
-        <span className="text-xs tracking-wide font-semibold text-secondary-900 dark:text-secondary-100">
+        <Globe className={`w-4 h-4 ${isDarkVariant ? 'text-white' : 'text-secondary-800 dark:text-secondary-100'}`} />
+        <span className={`text-xs tracking-wide font-semibold ${isDarkVariant ? 'text-white' : 'text-secondary-900 dark:text-secondary-100'}`}>
           {currentLanguage.code.toUpperCase()}
         </span>
-        <ChevronDown className={`w-4 h-4 text-secondary-700 dark:text-secondary-200 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDarkVariant ? 'text-white' : 'text-secondary-700 dark:text-secondary-200'} ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (

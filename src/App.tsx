@@ -1,22 +1,26 @@
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import { AppProvider } from './contexts/AppContext';
 import { ToastProvider } from './contexts/ToastContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ToastViewport from './components/ToastViewport';
-import HomePage from './pages/HomePage';
-import PropertiesPage from './pages/PropertiesPage';
-import PropertyDetailsPage from './pages/PropertyDetailsPage';
-import AboutPage from './pages/AboutPage';
-import ContactPage from './pages/ContactPage';
-import AdminLoginPage from './pages/admin/AdminLoginPage';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminOverview from './pages/admin/AdminOverview';
-import AdminProperties from './pages/admin/AdminProperties';
-import AdminPropertyForm from './pages/admin/AdminPropertyForm';
-import AdminInquiries from './pages/admin/AdminInquiries';
-import RequireAdmin from './components/admin/RequireAdmin';
+import PageTransition from './components/PageTransition';
 import ScrollToTop from './components/ScrollToTop';
+
+const HomePage = lazy(() => import('./pages/HomePage'));
+const PropertiesPage = lazy(() => import('./pages/PropertiesPage'));
+const PropertyDetailsPage = lazy(() => import('./pages/PropertyDetailsPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminOverview = lazy(() => import('./pages/admin/AdminOverview'));
+const AdminProperties = lazy(() => import('./pages/admin/AdminProperties'));
+const AdminPropertyForm = lazy(() => import('./pages/admin/AdminPropertyForm'));
+const AdminInquiries = lazy(() => import('./pages/admin/AdminInquiries'));
+
+import RequireAdmin from './components/admin/RequireAdmin';
 
 function App() {
   return (
@@ -27,14 +31,14 @@ function App() {
           <ToastViewport />
           <Routes>
             <Route element={<MainLayout />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/properties" element={<PropertiesPage />} />
-              <Route path="/properties/:id" element={<PropertyDetailsPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/" element={<LazyPage><HomePage /></LazyPage>} />
+              <Route path="/properties" element={<LazyPage><PropertiesPage /></LazyPage>} />
+              <Route path="/properties/:id" element={<LazyPage><PropertyDetailsPage /></LazyPage>} />
+              <Route path="/about" element={<LazyPage><AboutPage /></LazyPage>} />
+              <Route path="/contact" element={<LazyPage><ContactPage /></LazyPage>} />
             </Route>
 
-            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route path="/admin/login" element={<LazyPage><AdminLoginPage /></LazyPage>} />
 
             <Route
               path="/admin"
@@ -54,6 +58,25 @@ function App() {
         </BrowserRouter>
       </ToastProvider>
     </AppProvider>
+  );
+}
+
+function LazyPage({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <PageTransition>{children}</PageTransition>
+    </Suspense>
+  );
+}
+
+function PageLoader() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-luxury-gold/30 border-t-luxury-gold rounded-full animate-spin" />
+        <span className="text-secondary-500 dark:text-secondary-400 animate-pulse">Loading...</span>
+      </div>
+    </div>
   );
 }
 
