@@ -5,17 +5,59 @@
     <link rel="icon" type="image/svg+xml" href="/logo-anastelle-immo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Anastelle Immo - Luxury Real Estate Morocco</title>
-    <meta name="description" content="Anastelle Immo - Premier luxury real estate in Morocco. Find exclusive properties in Casablanca, Tanger, and Marrakech." />
+    <meta name="description" content="Anastelle Immo - Premier luxury real estate in Morocco. Discover exclusive properties in Casablanca, Tanger, and Marrakech." />
     <meta property="og:image" content="https://bolt.new/static/og_default.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://bolt.new/static/og_default.png" />
-    <link rel="preload" href="/logo-anastelle-immo.svg" as="image" type="image/svg+xml" />
-    <link rel="preload" href="/hero-luxury-interior.png" as="image" type="image/png" />
+    <link rel="preload" href="/logo-anastelle-immo.svg" as="image" type="image/svg+xml" fetchpriority="high" />
+    <link rel="preload" href="/hero-luxury-interior.png" as="image" type="image/png" fetchpriority="high" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <style>
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      .initial-loading {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f1eb;
+        z-index: 9999;
+        animation: fadeIn 0.3s ease-out 0.1s forwards;
+        opacity: 0;
+      }
+      .initial-loading-spinner {
+        width: 48px;
+        height: 48px;
+        border: 3px solid #eaeaec;
+        border-top-color: #c9a962;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      @media (prefers-color-scheme: dark) {
+        .initial-loading {
+          background: #1c1d21;
+        }
+        .initial-loading-spinner {
+          border-color: #414449;
+          border-top-color: #c9a962;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="initial-loading">
+        <div class="initial-loading-spinner"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

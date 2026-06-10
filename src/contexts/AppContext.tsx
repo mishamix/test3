@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode, useState, useCallback, useRef } from 'react';
+import { createContext, useContext, ReactNode, useState, useCallback, useRef, useEffect } from 'react';
 import { useLanguage, useTheme } from '../hooks/useFetch';
 import { Language, Theme } from '../types';
 import { getTranslation, getLangDirection } from '../i18n';
@@ -20,23 +20,44 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const { language, setLanguage: baseSetLanguage } = useLanguage();
   const { theme, setTheme, toggleTheme } = useTheme();
   const [isLanguageTransitioning, setIsLanguageTransitioning] = useState(false);
+  const [transitionPhase, setTransitionPhase] = useState<'idle' | 'fadeOut' | 'switch' | 'fadeIn'>('idle');
   const scrollRef = useRef(0);
 
   const t = (key: string): string => getTranslation(language, key);
   const dir = getLangDirection(language);
 
   const setLanguage = useCallback((lang: Language) => {
-    scrollRef.current = window.scrollY;
-    setIsLanguageTransitioning(true);
+    if (lang === language) return;
 
-    setTimeout(() => {
+    scrollRef.current = window.scrollY;
+    setTransitionPhase('fadeOut');
+
+    const fadeOutTimer = setTimeout(() => {
+      setTransitionPhase('switch');
       baseSetLanguage(lang);
-      setTimeout(() => {
-        window.scrollTo(0, scrollRef.current);
-        setIsLanguageTransitioning(false);
-      }, 50);
-    }, 150);
-  }, [baseSetLanguage]);
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          setTransitionPhase('fadeIn');
+          window.scrollTo({ top: scrollRef.current, behavior: 'instant' });
+
+          setTimeout(() => {
+            setTransitionPhase('idle');
+          }, 400);
+        }, 50);
+      });
+    }, 350);
+
+    return () => clearTimeout(fadeOutTimer);
+  }, [baseSetLanguage, language]);
+
+  useEffect(() => {
+    if (transitionPhase === 'fadeOut' || transitionPhase === 'switch') {
+      setIsLanguageTransitioning(true);
+    } else {
+      setIsLanguageTransitioning(false);
+    }
+  }, [transitionPhase]);
 
   const value: AppContextType = {
     language,
@@ -52,9 +73,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider value={value}>
       <div
-        className={`transition-opacity duration-300 ease-out ${
-          isLanguageTransitioning ? 'opacity-0' : 'opacity-100'
+        className={`transition-all duration-[400ms] ease-out ${
+          transitionPhase === 'fadeOut'
+            ? 'opacity-0'
+            : transitionPhase === 'fadeIn'
+            ? 'opacity-100 animate-[fadeIn_400ms_ease-out]'
+            : 'opacity-100'
         }`}
+        style={{ willChange: transitionPhase !== 'idle' ? 'opacity' : 'auto' }}
       >
         {children}
       </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, CheckCircle, MessageCircle } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { supabase } from '../lib/supabase';
 import Input from '../components/Input';
@@ -58,201 +58,184 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-20">
-      <section className="relative py-20 mb-10">
-        <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.pexels.com/photos/210617/pexels-photo-210617.jpeg?auto=compress&cs=tinysrgb&w=1920&h=600&dpr=2"
-            alt="Contact hero"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-secondary-900/80 via-secondary-900/60 to-secondary-900/80" />
-        </div>
-
-        <div className="relative z-10 container-custom text-center text-white">
-          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in-up">
-            {t('contact.title')}
-          </h1>
-          <p className="text-xl text-secondary-200 max-w-2xl mx-auto animate-fade-in-up animate-delay-200">
-            {t('contact.subtitle')}
-          </p>
-        </div>
-      </section>
-
+    <div className="min-h-screen pt-28 pb-20">
       <div className="container-custom">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-secondary-900 rounded-2xl shadow-xl p-8">
-              <h2 className="font-display text-2xl font-bold text-secondary-900 dark:text-white mb-6">
-                {t('contact.title')}
-              </h2>
+        <div className="text-center mb-16">
+          <h1 className="section-heading">{t('contact.title')}</h1>
+          <p className="section-subheading">{t('contact.subtitle')}</p>
+        </div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+          <div className="lg:col-span-3">
+            <div className="bg-white dark:bg-secondary-900 rounded-3xl shadow-2xl p-8 md:p-12">
               {success ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+                <div className="text-center py-16">
+                  <div className="w-24 h-24 bg-gradient-to-br from-luxury-gold/20 to-luxury-gold/10 rounded-full flex items-center justify-center mx-auto mb-8">
+                    <CheckCircle className="w-12 h-12 text-luxury-gold" />
                   </div>
-                  <h3 className="text-xl font-semibold text-secondary-900 dark:text-white mb-2">
+                  <h3 className="font-display text-3xl font-bold text-secondary-900 dark:text-white mb-4">
                     {t('contact.form.success')}
                   </h3>
+                  <p className="text-secondary-600 dark:text-secondary-400 mb-8 max-w-md mx-auto">
+                    We'll get back to you within 24 hours.
+                  </p>
                   <button
                     onClick={() => setSuccess(false)}
-                    className="text-luxury-gold hover:underline"
+                    className="btn btn-outline"
                   >
                     Send another message
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Input
-                      name="name"
-                      label={t('contact.form.name')}
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      placeholder="John Doe"
-                    />
-                    <Input
-                      type="email"
-                      name="email"
-                      label={t('contact.form.email')}
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      placeholder="john@example.com"
-                    />
-                  </div>
+                <>
+                  <h2 className="font-display text-3xl font-bold text-secondary-900 dark:text-white mb-8">
+                    Get in Touch
+                  </h2>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Input
-                      type="tel"
-                      name="phone"
-                      label={t('contact.form.phone')}
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="+1 234 567 8900"
-                    />
-                    <Select
-                      name="preferredContact"
-                      label={t('contact.form.preferredContact')}
-                      value={formData.preferredContact}
-                      onChange={handleChange}
-                      options={[
-                        { value: 'email', label: 'Email' },
-                        { value: 'whatsapp', label: 'WhatsApp' },
-                        { value: 'telegram', label: 'Telegram' },
-                      ]}
-                    />
-                  </div>
-
-                  <Textarea
-                    name="message"
-                    label={t('contact.form.message')}
-                    value={formData.message}
-                    onChange={handleChange}
-                    placeholder="I am interested in..."
-                    rows={4}
-                  />
-
-                  {error && (
-                    <div className="p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg">
-                      {error}
+                  <form onSubmit={handleSubmit} className="space-y-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <Input
+                        name="name"
+                        label={t('contact.form.name')}
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        placeholder="John Doe"
+                      />
+                      <Input
+                        type="email"
+                        name="email"
+                        label={t('contact.form.email')}
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        placeholder="john@example.com"
+                      />
                     </div>
-                  )}
 
-                  <Button type="submit" loading={loading} className="w-full md:w-auto">
-                    <Send className="w-5 h-5 mr-2" />
-                    {t('contact.form.submit')}
-                  </Button>
-                </form>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <Input
+                        type="tel"
+                        name="phone"
+                        label={t('contact.form.phone')}
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder="+1 234 567 8900"
+                      />
+                      <Select
+                        name="preferredContact"
+                        label={t('contact.form.preferredContact')}
+                        value={formData.preferredContact}
+                        onChange={handleChange}
+                        options={[
+                          { value: 'email', label: 'Email' },
+                          { value: 'whatsapp', label: 'WhatsApp' },
+                          { value: 'telegram', label: 'Telegram' },
+                        ]}
+                      />
+                    </div>
+
+                    <Textarea
+                      name="message"
+                      label={t('contact.form.message')}
+                      value={formData.message}
+                      onChange={handleChange}
+                      placeholder="I am interested in..."
+                      rows={5}
+                    />
+
+                    {error && (
+                      <div className="p-5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-xl border border-red-200 dark:border-red-800">
+                        {error}
+                      </div>
+                    )}
+
+                    <Button type="submit" loading={loading} className="w-full md:w-auto px-12">
+                      <Send className="w-5 h-5 mr-2" />
+                      {t('contact.form.submit')}
+                    </Button>
+                  </form>
+                </>
               )}
             </div>
           </div>
 
-          <div className="lg:col-span-1">
-            <div className="bg-secondary-900 dark:bg-secondary-800 rounded-2xl shadow-xl p-8 text-white">
-              <h2 className="font-display text-2xl font-bold mb-6">
+          <div className="lg:col-span-2">
+            <div className="bg-gradient-to-br from-secondary-900 via-secondary-800 to-secondary-900 dark:from-secondary-800 dark:via-secondary-900 dark:to-secondary-800 rounded-3xl shadow-2xl p-8 md:p-10 text-white sticky top-32">
+              <h2 className="font-display text-3xl font-bold mb-8">
                 {t('contact.info.title')}
               </h2>
 
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-luxury-gold/10 flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6 text-luxury-gold" />
+              <div className="space-y-8">
+                <div className="flex items-start gap-5 group">
+                  <div className="w-14 h-14 rounded-2xl bg-luxury-gold/10 flex items-center justify-center flex-shrink-0 transition-transform duration-500 group-hover:scale-110 group-hover:bg-luxury-gold/20">
+                    <MapPin className="w-7 h-7 text-luxury-gold" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">{t('contact.info.address')}</h3>
-                    <p className="text-secondary-400 text-sm">
+                    <h3 className="font-semibold mb-2 text-white text-lg">{t('contact.info.address')}</h3>
+                    <p className="text-secondary-400 leading-relaxed">
                       Downtown Dubai, Burj Khalifa Tower<br />
                       Level 120, Dubai, UAE
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-luxury-gold/10 flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6 text-luxury-gold" />
+                <div className="flex items-start gap-5 group">
+                  <div className="w-14 h-14 rounded-2xl bg-luxury-gold/10 flex items-center justify-center flex-shrink-0 transition-transform duration-500 group-hover:scale-110 group-hover:bg-luxury-gold/20">
+                    <Phone className="w-7 h-7 text-luxury-gold" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">{t('contact.info.phone')}</h3>
-                    <p className="text-secondary-400 text-sm">+971 4 123 4567</p>
-                    <p className="text-secondary-400 text-sm">+971 50 987 6543</p>
+                    <h3 className="font-semibold mb-2 text-white text-lg">{t('contact.info.phone')}</h3>
+                    <p className="text-secondary-400">+971 4 123 4567</p>
+                    <p className="text-secondary-400">+971 50 987 6543</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-luxury-gold/10 flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-6 h-6 text-luxury-gold" />
+                <div className="flex items-start gap-5 group">
+                  <div className="w-14 h-14 rounded-2xl bg-luxury-gold/10 flex items-center justify-center flex-shrink-0 transition-transform duration-500 group-hover:scale-110 group-hover:bg-luxury-gold/20">
+                    <Mail className="w-7 h-7 text-luxury-gold" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">{t('contact.info.email')}</h3>
-                    <p className="text-secondary-400 text-sm">info@luxuryestates.com</p>
-                    <p className="text-secondary-400 text-sm">sales@luxuryestates.com</p>
+                    <h3 className="font-semibold mb-2 text-white text-lg">{t('contact.info.email')}</h3>
+                    <p className="text-secondary-400">info@luxuryestates.com</p>
+                    <p className="text-secondary-400">sales@luxuryestates.com</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-luxury-gold/10 flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-6 h-6 text-luxury-gold" />
+                <div className="flex items-start gap-5 group">
+                  <div className="w-14 h-14 rounded-2xl bg-luxury-gold/10 flex items-center justify-center flex-shrink-0 transition-transform duration-500 group-hover:scale-110 group-hover:bg-luxury-gold/20">
+                    <Clock className="w-7 h-7 text-luxury-gold" />
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-1">{t('contact.info.workingHours')}</h3>
-                    <p className="text-secondary-400 text-sm">Mon - Fri: 9:00 AM - 7:00 PM</p>
-                    <p className="text-secondary-400 text-sm">Sat - Sun: 10:00 AM - 5:00 PM</p>
+                    <h3 className="font-semibold mb-2 text-white text-lg">{t('contact.info.workingHours')}</h3>
+                    <p className="text-secondary-400">Mon - Fri: 9:00 AM - 7:00 PM</p>
+                    <p className="text-secondary-400">Sat - Sun: 10:00 AM - 5:00 PM</p>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-secondary-700">
-                <a
-                  href="https://wa.me/97141234567"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn w-full bg-green-600 hover:bg-green-700 text-white mb-3"
-                >
-                  WhatsApp Us
-                </a>
-                <a
-                  href="https://t.me/luxuryestates"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn w-full bg-blue-500 hover:bg-blue-600 text-white"
-                >
-                  Telegram Us
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-12">
-          <div className="bg-white dark:bg-secondary-900 rounded-2xl shadow-xl overflow-hidden h-[400px]">
-            <div className="w-full h-full bg-secondary-100 dark:bg-secondary-800 flex items-center justify-center">
-              <div className="text-center">
-                <MapPin className="w-12 h-12 text-luxury-gold mx-auto mb-4" />
-                <p className="text-secondary-600 dark:text-secondary-400">Downtown Dubai, Burj Khalifa Tower</p>
-                <p className="text-sm text-secondary-500 dark:text-secondary-500 mt-2">Interactive map would be displayed here</p>
+              <div className="mt-10 pt-8 border-t border-secondary-700/50">
+                <p className="text-secondary-400 text-sm mb-5 font-medium">Quick Connect</p>
+                <div className="space-y-4">
+                  <a
+                    href="https://wa.me/97141234567"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-social w-full bg-green-600 hover:bg-green-500 text-white gap-3"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    WhatsApp Us
+                  </a>
+                  <a
+                    href="https://t.me/luxuryestates"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-social w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white gap-3"
+                  >
+                    <Send className="w-5 h-5" />
+                    Telegram Us
+                  </a>
+                </div>
               </div>
             </div>
           </div>

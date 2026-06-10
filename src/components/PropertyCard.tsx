@@ -24,7 +24,7 @@ const PropertyCard = memo(function PropertyCard({ property }: PropertyCardProps)
   return (
     <Link
       to={`/properties/${property.id}`}
-      className="card group block"
+      className="group block bg-white dark:bg-secondary-900 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 ease-out"
     >
       <div className="relative aspect-[4/3] overflow-hidden">
         <img
@@ -34,63 +34,64 @@ const PropertyCard = memo(function PropertyCard({ property }: PropertyCardProps)
           decoding="async"
           className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
         {property.status === 'sold' && (
-          <div className="absolute top-4 left-4 px-3 py-1.5 bg-red-600 text-white text-sm font-medium rounded-lg shadow-lg transition-transform duration-300 group-hover:scale-105">
+          <div className="absolute top-4 left-4 px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-xl shadow-xl">
             {t('properties.status.sold')}
           </div>
         )}
         {property.status === 'rented' && (
-          <div className="absolute top-4 left-4 px-3 py-1.5 bg-amber-700 text-white text-sm font-medium rounded-lg shadow-lg transition-transform duration-300 group-hover:scale-105">
+          <div className="absolute top-4 left-4 px-4 py-2 bg-amber-700 text-white text-sm font-semibold rounded-xl shadow-xl">
             {t('properties.status.rented')}
           </div>
         )}
         {property.is_featured && property.status === 'for_sale' && (
-          <div className="absolute top-4 left-4 px-3 py-1.5 bg-luxury-gold text-white text-sm font-medium rounded-lg shadow-lg transition-transform duration-300 group-hover:scale-105">
+          <div className="absolute top-4 left-4 px-4 py-2 bg-luxury-gold text-white text-sm font-semibold rounded-xl shadow-xl">
             {t('admin.featured')}
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
 
-      <div className="p-5">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="font-display text-lg font-semibold text-secondary-900 dark:text-white group-hover:text-luxury-gold transition-colors duration-300 line-clamp-2">
-            {title}
-          </h3>
-        </div>
+      <div className="p-6">
+        <h3 className="font-display text-xl font-bold text-secondary-900 dark:text-white mb-3 group-hover:text-luxury-gold transition-colors duration-400 line-clamp-2">
+          {title}
+        </h3>
 
-        <div className="flex items-center text-secondary-500 dark:text-secondary-400 mb-3 transition-colors duration-300 group-hover:text-luxury-gold/70">
-          <MapPin className="w-4 h-4 mr-1.5 flex-shrink-0" />
+        <div className="flex items-center text-secondary-500 dark:text-secondary-400 mb-5">
+          <MapPin className="w-4 h-4 mr-2 text-luxury-gold/60" />
           <span className="text-sm line-clamp-1">{location}</span>
         </div>
 
-        <div className="flex items-center gap-4 text-secondary-600 dark:text-secondary-400 text-sm mb-4">
+        <div className="flex items-center gap-5 text-secondary-600 dark:text-secondary-400 text-sm mb-6">
           {property.bedrooms > 0 && (
-            <div className="flex items-center transition-transform duration-300 hover:scale-105">
-              <Bed className="w-4 h-4 mr-1 text-luxury-gold/70" />
-              <span>{property.bedrooms}</span>
+            <div className="flex items-center gap-1.5">
+              <Bed className="w-4 h-4 text-luxury-gold/60" />
+              <span className="font-medium">{property.bedrooms}</span>
             </div>
           )}
           {property.bathrooms > 0 && (
-            <div className="flex items-center transition-transform duration-300 hover:scale-105">
-              <Bath className="w-4 h-4 mr-1 text-luxury-gold/70" />
-              <span>{property.bathrooms}</span>
+            <div className="flex items-center gap-1.5">
+              <Bath className="w-4 h-4 text-luxury-gold/60" />
+              <span className="font-medium">{property.bathrooms}</span>
             </div>
           )}
           {property.area_size > 0 && (
-            <div className="flex items-center transition-transform duration-300 hover:scale-105">
-              <Square className="w-4 h-4 mr-1 text-luxury-gold/70" />
-              <span>{property.area_size.toLocaleString()} {areaUnit}</span>
+            <div className="flex items-center gap-1.5">
+              <Square className="w-4 h-4 text-luxury-gold/60" />
+              <span className="font-medium">{property.area_size.toLocaleString()} {areaUnit}</span>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-between pt-4 border-t border-secondary-100 dark:border-secondary-800">
-          <div className="font-display text-xl font-bold text-luxury-gold transition-transform duration-300 origin-left group-hover:scale-105">
+        <div className="flex items-center justify-between pt-5 border-t border-secondary-100 dark:border-secondary-800">
+          <div className="font-display text-2xl font-bold text-luxury-gold">
             {formatPrice(property.price, property.currency)}
           </div>
-          <span className="text-sm font-medium text-secondary-600 dark:text-secondary-400 group-hover:text-luxury-gold transition-all duration-300 group-hover:translate-x-1">
-            {t('common.viewDetails')} →
+          <span className="text-sm font-medium text-secondary-600 dark:text-secondary-400 group-hover:text-luxury-gold transition-colors duration-400 flex items-center gap-1">
+            {t('common.viewDetails')}
+            <span className="transform translate-x-0 group-hover:translate-x-1 transition-transform duration-300">→</span>
           </span>
         </div>
       </div>
